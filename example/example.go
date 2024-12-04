@@ -1,10 +1,8 @@
 package main
 
 import (
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/layout"
 	forms "go-forms"
 )
 
@@ -30,14 +28,14 @@ func main() {
 			[]forms.Validator{&forms.MinValidator{Min: 0}, &forms.MaxValidator{Max: 150}, &forms.IsIntegerValidator{}}, // Validators (min 0, max 150, integer)
 			"e.g. 42", // Placeholder
 			"Age: ",   // Prompt
-			0,         // Default value
+			-1,        // Default value
 		),
 		forms.NewMultipleChoiceField(
 			"color", // Id
 			[]forms.DisplayCondition{&forms.DisplayAfter{FieldId: "age"}}, // Display conditions (display after the age field is filled out)
-			[]forms.Validator{}, // Validators (none)
-			"Choose a color",    // Placeholder
-			"Color: ",           // Prompt
+			[]forms.Validator{&forms.ChoiceValidator{}},                   // Validators (choice validator to force user to choose a color)
+			"Choose a color", // Placeholder
+			"Color: ",        // Prompt
 			map[string]forms.Option{
 				"red":   {"Red", "The color red."},
 				"green": {"Green", "The color green."},
@@ -50,9 +48,11 @@ func main() {
 	// Create a new form
 	formApp := app.New()
 	win := formApp.NewWindow("Form Example")
-	box := container.New(layout.NewVBoxLayout())
+	win.CenterOnScreen() // Configure the window
+	win.Resize(fyne.Size{Width: 900, Height: 600})
+	win.Show() // Show the window
 
-	formSubmitCallback := func(
+	formSubmitCallback := func( // Callback function to handle form submission
 		values map[string]string,
 	) {
 		for key, value := range values {
@@ -60,15 +60,14 @@ func main() {
 		}
 	}
 
-	formPopup := dialog.NewCustomWithoutButtons("Form popup", box, win)
-	forms.FormToFyneForm(
-		exampleForm,
-		box,
-		formPopup,
-		win,
-		formSubmitCallback,
+	forms.FormToFynePopup( // Convert the form to a Fyne popup
+		"Example Form",                     // Title
+		fyne.Size{Width: 400, Height: 400}, // Size
+		exampleForm,                        // Form
+		win,                                // Parent window
+		formSubmitCallback,                 // Submit callback
+		func() {},                          // Cancel callback (empty)
 	)
-	formPopup.Show()
 
-	formApp.Run()
+	formApp.Run() // Run the app
 }

@@ -542,14 +542,15 @@ func (f *Form) SetOnChangeCallback(onChange func()) {
 func (f *Form) GetError() error {
 	for _, field := range f.Fields {
 		if !field.IsValid() {
-			return &CustomError{Message: field.GetId() + "is not valid (" + field.GetError().Error() + ")"}
+			return &CustomError{Message: field.GetId() + " is not valid (" + field.GetError().Error() + ")"}
 		}
 	}
 	return nil
 }
 
-// Defining the Form Builder Functions
+// Defining the form builder functions
 
+// NewForm creates a new form with the given fields
 func NewForm(fields ...Field) *Form {
 	form := &Form{Fields: fields, onChange: func() {}}
 	for _, field := range fields {
@@ -569,22 +570,27 @@ func NewForm(fields ...Field) *Form {
 	return form
 }
 
+// NewFieldGroup creates a new field group with the given fields
 func NewFieldGroup(id string, displayConditions []DisplayCondition, validators []Validator, heading string, fields ...Field) *FieldGroup {
 	return &FieldGroup{FieldBaseType: &FieldBaseType{Id: id, DisplayConditions: displayConditions, Validators: validators}, Fields: fields, heading: heading}
 }
 
+// NewTextField creates a new text field with the given parameters
 func NewTextField(id string, displayConditions []DisplayCondition, validators []Validator, placeholder string, prompt string, defaultValue string) *TextField {
 	return &TextField{FieldBaseType: &FieldBaseType{Id: id, DisplayConditions: displayConditions, Validators: validators, Value: defaultValue}, Placeholder: placeholder, Prompt: prompt}
 }
 
+// NewNumberField creates a new number field with the given parameters
 func NewNumberField(id string, displayConditions []DisplayCondition, validators []Validator, placeholder string, prompt string, defaultValue int) *NumberField {
 	return &NumberField{TextField: &TextField{FieldBaseType: &FieldBaseType{Id: id, DisplayConditions: displayConditions, Validators: validators, Value: strconv.Itoa(defaultValue)}, Placeholder: placeholder, Prompt: prompt}}
 }
 
+// NewMultipleChoiceField creates a new multiple choice field with the given parameters
 func NewMultipleChoiceField(id string, displayConditions []DisplayCondition, validators []Validator, placeholder string, prompt string, options map[string]Option, defaultValue string) *MultipleChoiceField {
 	return &MultipleChoiceField{TextField: &TextField{FieldBaseType: &FieldBaseType{Id: id, DisplayConditions: displayConditions, Validators: validators, Value: defaultValue}, Placeholder: placeholder, Prompt: prompt}, Options: options}
 }
 
+// NewMessage creates a new message with the given parameters
 func NewMessage(id string, displayConditions []DisplayCondition, message string) *Message {
 	return &Message{FieldBaseType: &FieldBaseType{Id: id, DisplayConditions: displayConditions, Validators: []Validator{}, Value: message}}
 }

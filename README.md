@@ -11,6 +11,7 @@ A simple form builder for Go.
 
 ## Usage
 Look at the `example` directory for a simple example.
+You can run the example with `go run example/example.go`.
 
 ## Field types
 
@@ -78,7 +79,7 @@ Option has the following properties:
 - `Description` (string): Description for the option.
 
 Available validators
-- `ChoiceValidator`: Validate that the field is one of the given `Choices` (added by default).
+- `ChoiceValidator`: Validate that the field is one of the options in `Options`. 
 
 ### FieldGroup
 A group of fields that can be displayed conditionally.

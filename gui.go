@@ -2,7 +2,9 @@ package go_forms
 
 import (
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -83,12 +85,13 @@ func fieldsToFyneForm(fields []Field, form *Form, box *fyne.Container, fyneForm 
 	return formItems
 }
 
+// FormToFyneForm converts a Form to a Fyne form and adds it to the provided container.
 func FormToFyneForm(
 	form *Form,
 	box *fyne.Container,
-	parentDialog *dialog.CustomDialog,
 	window fyne.Window,
 	onSubmit func(values map[string]string),
+	onCancel func(),
 ) {
 	fields := form.GetFieldsToDisplay()
 	fyneForm := widget.NewForm()
@@ -98,16 +101,41 @@ func FormToFyneForm(
 			onSubmit(
 				form.GetFieldValues(),
 			)
-			parentDialog.Hide()
 		} else {
 			dialog.ShowError(form.GetError(), window)
 		}
 	}
 	fyneForm.OnCancel = func() {
-		parentDialog.Hide()
+		onCancel()
 	}
 	fyneForm.Resize(fyne.NewSize(700, 400))
 	box.RemoveAll()
 	box.Add(fyneForm)
 	box.Refresh()
+}
+
+// FormToFynePopup converts a Form to a Fyne popup and displays it.
+func FormToFynePopup(
+	titel string,
+	size fyne.Size,
+	form *Form,
+	window fyne.Window,
+	onSubmit func(values map[string]string),
+	onCancel func(),
+) {
+	box := container.New(layout.NewVBoxLayout())
+	formPopup := dialog.NewCustomWithoutButtons(titel, box, window)
+	formPopup.Resize(size)
+
+	submitCallback := func(values map[string]string) {
+		onSubmit(values)
+		formPopup.Hide()
+	}
+	cancelCallback := func() {
+		onCancel()
+		formPopup.Hide()
+	}
+
+	FormToFyneForm(form, box, window, submitCallback, cancelCallback)
+	formPopup.Show()
 }
