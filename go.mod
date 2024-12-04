@@ -1,4 +1,4 @@
-module go-forms
+module github.com/CUBUS-mc/go-forms
 
 go 1.23
 
